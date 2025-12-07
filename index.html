@@ -6,118 +6,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta
     name="description"
-    content="Operator Blueprints CAC Calculator – fast, clean operator tool for calculating CAC, LTV:CAC, and payback."
+    content="Operator Blueprints CAC Calculator – quickly estimate your blended and paid CAC with a clean operator UI."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
   />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="app-header">
-      <div>
+      <div class="logo-mark">OB</div>
+      <div class="app-meta">
         <h1>CAC Calculator</h1>
-        <p class="subtitle">Blended CAC • Paid CAC • LTV:CAC • Payback</p>
-      </div>
-      <div class="tags">
-        <span class="tag">Operator Blueprints</span>
-        <span class="tag">Tool #2</span>
+        <p class="app-subtitle">
+          Estimate your cost to acquire a customer by period, and sanity-check your LTV:CAC.
+        </p>
       </div>
     </header>
 
-    <main class="grid">
-      <section class="panel">
-        <h2>Inputs</h2>
+    <main class="app-main">
+      <section class="card card-layout">
+        <!-- INPUT COLUMN -->
+        <div class="card-column card-column--left">
+          <h2 class="section-title">Inputs</h2>
 
-        <form id="cacForm">
-          <label>Time Unit</label>
-          <select id="timeUnit">
-            <option value="month">Monthly</option>
-            <option value="quarter">Quarterly</option>
-            <option value="year">Yearly</option>
-          </select>
+          <form id="cac-form" novalidate>
+            <div class="field-row">
+              <div class="field">
+                <label for="time-unit">Time Unit</label>
+                <select id="time-unit" name="time-unit">
+                  <option value="Month">Month</option>
+                  <option value="Quarter">Quarter</option>
+                  <option value="Year">Year</option>
+                  <option value="Custom">Custom</option>
+                </select>
+              </div>
 
-          <label>Period Label</label>
-          <input id="periodLabel" placeholder="e.g. Jan 2026" />
+              <div class="field">
+                <label for="time-label">Period Label</label>
+                <input
+                  id="time-label"
+                  name="time-label"
+                  type="text"
+                  placeholder="e.g. October 2025"
+                />
+              </div>
+            </div>
 
-          <div class="divider"></div>
+            <div class="field">
+              <label for="new-customers">New Customers Acquired</label>
+              <input
+                id="new-customers"
+                name="new-customers"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="e.g. 250"
+                inputmode="decimal"
+              />
+            </div>
 
-          <label>Paid Media Spend ($)</label>
-          <input id="paidMediaSpend" type="number" step="0.01" />
+            <div class="field">
+              <label for="paid-spend">Paid Media Spend (USD)</label>
+              <input
+                id="paid-spend"
+                name="paid-spend"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 12500"
+                inputmode="decimal"
+              />
+              <p class="field-hint">
+                Meta, Google, TikTok, affiliates & any directly attributable media spend.
+              </p>
+            </div>
 
-          <label>Other Marketing Spend ($)</label>
-          <input id="otherMarketingSpend" type="number" step="0.01" />
+            <div class="field">
+              <label for="other-spend">Other Acquisition Spend (USD)</label>
+              <input
+                id="other-spend"
+                name="other-spend"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 6000"
+                inputmode="decimal"
+              />
+              <p class="field-hint">
+                Teams, agencies, tools & other acquisition-related overhead for this period.
+              </p>
+            </div>
 
-          <label>Salaries ($)</label>
-          <input id="salarySpend" type="number" step="0.01" />
+            <div class="field">
+              <label for="ltv">Average LTV per Customer (Optional, USD)</label>
+              <input
+                id="ltv"
+                name="ltv"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 450"
+                inputmode="decimal"
+              />
+              <p class="field-hint">
+                Use your best estimate or pull from your LTV Calculator.
+              </p>
+            </div>
 
-          <label>Overhead ($)</label>
-          <input id="overheadSpend" type="number" step="0.01" />
-
-          <div class="divider"></div>
-
-          <label>New Customers</label>
-          <input id="newCustomers" type="number" />
-
-          <label>Paid Customers</label>
-          <input id="paidCustomers" type="number" />
-
-          <details>
-            <summary>Advanced</summary>
-
-            <label>LTV ($)</label>
-            <input id="ltv" type="number" step="0.01" />
-
-            <label>Gross Margin %</label>
-            <input id="grossMargin" type="number" step="0.1" />
-
-            <label>AOV ($)</label>
-            <input id="aov" type="number" step="0.01" />
-          </details>
-
-          <button type="button" id="resetButton">Reset</button>
-          <button type="button" id="copyButton">Copy Summary</button>
-        </form>
-      </section>
-
-      <section class="panel">
-        <h2>Outputs</h2>
-
-        <div class="metric">
-          <p class="label">Blended CAC</p>
-          <p class="value" id="blendedCacDisplay">—</p>
+            <div class="form-actions">
+              <button type="button" id="quick-fill" class="ghost-button">
+                Load Sample Data
+              </button>
+              <button type="reset" class="link-button">Reset</button>
+            </div>
+          </form>
         </div>
 
-        <div class="metric">
-          <p class="label">Paid CAC</p>
-          <p class="value" id="paidCacDisplay">—</p>
-        </div>
+        <!-- RESULTS COLUMN -->
+        <div class="card-column card-column--right">
+          <h2 class="section-title">Results</h2>
 
-        <div class="metric">
-          <p class="label">LTV : CAC</p>
-          <p class="value" id="ltvCacDisplay">—</p>
-        </div>
+          <div id="error-banner" class="error-banner" aria-live="polite"></div>
 
-        <div class="metric">
-          <p class="label">Orders to Break Even</p>
-          <p class="value" id="ordersToBreakEvenDisplay">—</p>
-        </div>
+          <div class="summary-row">
+            <div>
+              <p class="summary-label">Summary</p>
+              <p class="summary-value" id="summary-period">
+                Waiting for inputs…
+              </p>
+            </div>
+          </div>
 
-        <div class="summary">
-          <p><strong>Time Unit:</strong> <span id="summaryTimeUnit">—</span></p>
-          <p><strong>Period:</strong> <span id="summaryPeriodLabel">—</span></p>
-          <p><strong>Total Spend:</strong> <span id="summaryTotalSpend">—</span></p>
-          <p><strong>New Customers:</strong> <span id="summaryNewCustomers">—</span></p>
-          <p><strong>Paid Customers:</strong> <span id="summaryPaidCustomers">—</span></p>
-        </div>
+          <div class="metrics-grid">
+            <div class="metric-card metric-card--primary">
+              <p class="metric-label">Blended CAC</p>
+              <p class="metric-value" id="blended-cac">$0.00</p>
+              <p class="metric-sub" id="blended-cac-sub">
+                Total acquisition spend ÷ new customers
+              </p>
+            </div>
 
-        <p class="notes" id="interpretationText">
-          Enter spend + customers to calculate CAC.
-        </p>
+            <div class="metric-card">
+              <p class="metric-label">Paid CAC</p>
+              <p class="metric-value" id="paid-cac">$0.00</p>
+              <p class="metric-sub">Paid media only ÷ new customers</p>
+            </div>
+
+            <div class="metric-card">
+              <p class="metric-label">Total Acquisition Spend</p>
+              <p class="metric-value" id="total-spend">$0.00</p>
+              <p class="metric-sub" id="total-spend-sub">Paid + other acquisition costs</p>
+            </div>
+
+            <div class="metric-card">
+              <p class="metric-label">New Customers</p>
+              <p class="metric-value" id="customers-out">0</p>
+              <p class="metric-sub">For the selected period</p>
+            </div>
+          </div>
+
+          <div class="status-panel">
+            <div class="status-header">
+              <span class="status-title">LTV : CAC</span>
+              <span class="status-pill" id="ltv-cac-status">Add LTV</span>
+            </div>
+            <p class="status-main" id="ltv-cac-ratio">Add LTV to see your LTV:CAC ratio.</p>
+            <p class="status-note">
+              Rule of thumb: aim for <strong>3x+ LTV:CAC</strong> for healthy paid acquisition.
+            </p>
+          </div>
+        </div>
       </section>
     </main>
 
-    <footer class="footer">Operator Blueprints • CAC Calculator</footer>
-
-    <div id="toast">Copied.</div>
+    <footer class="app-footer">
+      <span>Operator Blueprints &middot; Tools & Calculators &middot; CAC</span>
+    </footer>
   </div>
 
   <script src="script.js"></script>
