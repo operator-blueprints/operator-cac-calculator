@@ -1,107 +1,208 @@
-function num(id) {
-  const v = document.getElementById(id).value;
-  return v === "" ? null : Number(v);
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const timeUnitEl = document.getElementById("time-unit");
+  const timeLabelEl = document.getElementById("time-label");
+  const newCustomersEl = document.getElementById("new-customers");
+  const paidSpendEl = document.getElementById("paid-spend");
+  const otherSpendEl = document.getElementById("other-spend");
+  const ltvEl = document.getElementById("ltv");
 
-function money(v) {
-  return v == null ? "—" : "$" + v.toFixed(2);
-}
+  const blendedCACEl = document.getElementById("blended-cac");
+  const blendedCACSubEl = document.getElementById("blended-cac-sub");
+  const paidCACEl = document.getElementById("paid-cac");
+  const totalSpendEl = document.getElementById("total-spend");
+  const totalSpendSubEl = document.getElementById("total-spend-sub");
+  const customersOutEl = document.getElementById("customers-out");
 
-function ratio(v) {
-  return v == null ? "—" : v.toFixed(2) + "x";
-}
+  const summaryPeriodEl = document.getElementById("summary-period");
+  const errorBannerEl = document.getElementById("error-banner");
 
-function text(id, value) {
-  document.getElementById(id).textContent = value;
-}
+  const ltvCACStatusEl = document.getElementById("ltv-cac-status");
+  const ltvCACRatioEl = document.getElementById("ltv-cac-ratio");
 
-function recalc() {
-  const timeUnit = document.getElementById("timeUnit").value;
-  const periodLabel = document.getElementById("periodLabel").value || "—";
+  const formEl = document.getElementById("cac-form");
+  const quickFillBtn = document.getElementById("quick-fill");
 
-  const paid = num("paidMediaSpend") || 0;
-  const other = num("otherMarketingSpend") || 0;
-  const salary = num("salarySpend") || 0;
-  const overhead = num("overheadSpend") || 0;
-
-  const newCust = num("newCustomers");
-  const paidCust = num("paidCustomers");
-
-  const ltv = num("ltv");
-  const m = num("grossMargin");
-  const aov = num("aov");
-
-  const total = paid + other + salary + overhead;
-
-  text("summaryTimeUnit", timeUnit);
-  text("summaryPeriodLabel", periodLabel);
-  text("summaryTotalSpend", money(total));
-  text("summaryNewCustomers", newCust ?? "—");
-  text("summaryPaidCustomers", paidCust ?? "—");
-
-  let blended = null;
-  if (newCust > 0) blended = total / newCust;
-  text("blendedCacDisplay", money(blended));
-
-  let paidCac = null;
-  if (paidCust > 0) paidCac = paid / paidCust;
-  text("paidCacDisplay", money(paidCac));
-
-  let ltvCac = null;
-  if (ltv > 0 && blended > 0) ltvCac = ltv / blended;
-  text("ltvCacDisplay", ratio(ltvCac));
-
-  let orders = null;
-  if (aov > 0 && m > 0 && blended > 0) {
-    const gp = aov * (m / 100);
-    if (gp > 0) orders = blended / gp;
+  function parseNumber(inputEl) {
+    const raw = (inputEl.value || "").toString().trim();
+    if (!raw) return 0;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : 0;
   }
-  text("ordersToBreakEvenDisplay", orders == null ? "—" : orders.toFixed(2));
 
-  document.getElementById("interpretationText").textContent =
-    blended == null
-      ? "Enter spend + customers."
-      : ltvCac == null
-      ? "Add LTV for LTV:CAC."
-      : "CAC + LTV ready.";
-}
+  function formatCurrency(value) {
+    if (!Number.isFinite(value)) return "$0.00";
+    return (
+      "$" +
+      value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    );
+  }
 
-function resetForm() {
-  document.getElementById("cacForm").reset();
-  recalc();
-}
+  function formatNumber(value) {
+    if (!Number.isFinite(value)) return "0";
+    return value.toLocaleString("en-US", {
+      maximumFractionDigits: 0,
+    });
+  }
 
-function copySummary() {
-  const fields = [
-    "summaryTimeUnit",
-    "summaryPeriodLabel",
-    "summaryTotalSpend",
-    "summaryNewCustomers",
-    "summaryPaidCustomers",
-    "blendedCacDisplay",
-    "paidCacDisplay",
-    "ltvCacDisplay",
-    "ordersToBreakEvenDisplay"
-  ];
+  function formatRatio(value) {
+    if (!Number.isFinite(value) || value <= 0) return "–";
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
 
-  let out = "Operator Blueprints — CAC Summary\n\n";
-  fields.forEach((id) => {
-    out += id + ": " + document.getElementById(id).textContent + "\n";
+  function updateSummary(customers, totalSpend) {
+    const unit = timeUnitEl.value || "Period";
+    const label = timeLabelEl.value.trim();
+
+    if (!customers && !totalSpend && !label) {
+      summaryPeriodEl.textContent = "Waiting for inputs…";
+      return;
+    }
+
+    const periodText = label ? `${label} (${unit})` : `This ${unit.toLowerCase()}`;
+    summaryPeriodEl.textContent = `${formatNumber(customers)} new customers in ${periodText}.`;
+  }
+
+  function updateError(message) {
+    if (message) {
+      errorBannerEl.textContent = message;
+      errorBannerEl.classList.add("visible");
+    } else {
+      errorBannerEl.textContent = "";
+      errorBannerEl.classList.remove("visible");
+    }
+  }
+
+  function updateLtvCAC(ltv, blendedCAC) {
+    ltvCACStatusEl.classList.remove("good", "warn", "danger");
+
+    if (!ltv || !blendedCAC || blendedCAC <= 0) {
+      ltvCACStatusEl.textContent = "Add LTV";
+      ltvCACRatioEl.textContent = "Add LTV to see your LTV:CAC ratio.";
+      return;
+    }
+
+    const ratio = ltv / blendedCAC;
+    const ratioText = formatRatio(ratio);
+
+    if (ratio >= 3) {
+      ltvCACStatusEl.textContent = "Healthy";
+      ltvCACStatusEl.classList.add("good");
+      ltvCACRatioEl.textContent = `Your LTV:CAC is ${ratioText}x – strong foundation for scaling.`;
+    } else if (ratio >= 2) {
+      ltvCACStatusEl.textContent = "Tight";
+      ltvCACStatusEl.classList.add("warn");
+      ltvCACRatioEl.textContent = `Your LTV:CAC is ${ratioText}x – workable but margin is tight.`;
+    } else {
+      ltvCACStatusEl.textContent = "Danger";
+      ltvCACStatusEl.classList.add("danger");
+      ltvCACRatioEl.textContent = `Your LTV:CAC is ${ratioText}x – acquisition is likely unprofitable.`;
+    }
+  }
+
+  function calculate() {
+    const customers = parseNumber(newCustomersEl);
+    const paidSpend = parseNumber(paidSpendEl);
+    const otherSpend = parseNumber(otherSpendEl);
+    const ltv = parseNumber(ltvEl);
+
+    const totalSpend = paidSpend + otherSpend;
+
+    // Update high-level summary
+    updateSummary(customers, totalSpend);
+
+    // Validation for CAC math
+    if (customers <= 0 && (paidSpend > 0 || otherSpend > 0)) {
+      blendedCACEl.textContent = "$0.00";
+      paidCACEl.textContent = "$0.00";
+      totalSpendEl.textContent = formatCurrency(totalSpend);
+      customersOutEl.textContent = "0";
+
+      blendedCACSubEl.textContent =
+        "Enter new customers > 0 to calculate CAC.";
+      totalSpendSubEl.textContent = "Paid + other acquisition costs";
+
+      updateError(
+        "To calculate CAC, you need at least one new customer in the selected period."
+      );
+      updateLtvCAC(0, 0);
+      return;
+    }
+
+    updateError("");
+
+    // CAC calculations
+    let paidCAC = 0;
+    let blendedCAC = 0;
+
+    if (customers > 0) {
+      paidCAC = paidSpend / customers;
+      blendedCAC = totalSpend / customers;
+    }
+
+    blendedCACEl.textContent = formatCurrency(blendedCAC);
+    paidCACEl.textContent = formatCurrency(paidCAC);
+    totalSpendEl.textContent = formatCurrency(totalSpend);
+    customersOutEl.textContent = formatNumber(customers);
+
+    blendedCACSubEl.textContent =
+      "Total acquisition spend ÷ new customers";
+    totalSpendSubEl.textContent =
+      "Paid + other acquisition costs";
+
+    updateLtvCAC(ltv, blendedCAC);
+  }
+
+  function applyQuickFill() {
+    timeUnitEl.value = "Month";
+    timeLabelEl.value = "November 2025";
+
+    newCustomersEl.value = "320";
+    paidSpendEl.value = "14800";
+    otherSpendEl.value = "5200";
+    ltvEl.value = "420";
+
+    calculate();
+  }
+
+  // Wire up listeners
+  [
+    timeUnitEl,
+    timeLabelEl,
+    newCustomersEl,
+    paidSpendEl,
+    otherSpendEl,
+    ltvEl,
+  ].forEach((el) => {
+    el.addEventListener("input", calculate);
+    el.addEventListener("change", calculate);
   });
 
-  navigator.clipboard.writeText(out);
-  const toast = document.getElementById("toast");
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1800);
-}
+  if (quickFillBtn) {
+    quickFillBtn.addEventListener("click", applyQuickFill);
+  }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document
-    .querySelectorAll("#cacForm input, #cacForm select")
-    .forEach((el) => el.addEventListener("input", recalc));
+  formEl.addEventListener("reset", () => {
+    // Allow default reset to clear inputs, then restore outputs
+    window.setTimeout(() => {
+      blendedCACEl.textContent = "$0.00";
+      paidCACEl.textContent = "$0.00";
+      totalSpendEl.textContent = "$0.00";
+      customersOutEl.textContent = "0";
+      summaryPeriodEl.textContent = "Waiting for inputs…";
+      blendedCACSubEl.textContent =
+        "Total acquisition spend ÷ new customers";
+      totalSpendSubEl.textContent = "Paid + other acquisition costs";
+      updateError("");
+      updateLtvCAC(0, 0);
+    }, 0);
+  });
 
-  document.getElementById("resetButton").onclick = resetForm;
-  document.getElementById("copyButton").onclick = copySummary;
-
-  recalc();
+  // Initial render
+  calculate();
 });
