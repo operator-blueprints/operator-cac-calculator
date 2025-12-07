@@ -29,6 +29,51 @@
   --radius-pill: 999px;
   --shadow-soft: 0 32px 120px rgba(0, 0, 0, 0.85);
 }
+/* Global Header ----------------------------------------------------------- */
+
+.global-header {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto 22px auto;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  z-index: 10;
+}
+
+.gh-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gh-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #60a5fa 0%, #1e3a8a 70%);
+  box-shadow:
+    0 0 12px rgba(96, 165, 250, 0.9),
+    0 0 24px rgba(30, 58, 138, 0.7);
+}
+
+.gh-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #e5e7eb;
+  text-transform: uppercase;
+}
+
+.gh-subtitle {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  margin-left: 22px;
+  text-transform: none;
+}
 
 html,
 body {
