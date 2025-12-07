@@ -159,12 +159,6 @@ body {
   gap: 10px;
 }
 
-$field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
 .field {
   display: flex;
   flex-direction: column;
