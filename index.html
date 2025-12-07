@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Operator Blueprints – CAC Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Operator Blueprints CAC Calculator – fast, clean operator tool for calculating CAC, LTV:CAC, and payback."
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <h1>CAC Calculator</h1>
+        <p class="subtitle">Blended CAC • Paid CAC • LTV:CAC • Payback</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Operator Blueprints</span>
+        <span class="tag">Tool #2</span>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <h2>Inputs</h2>
+
+        <form id="cacForm">
+          <label>Time Unit</label>
+          <select id="timeUnit">
+            <option value="month">Monthly</option>
+            <option value="quarter">Quarterly</option>
+            <option value="year">Yearly</option>
+          </select>
+
+          <label>Period Label</label>
+          <input id="periodLabel" placeholder="e.g. Jan 2026" />
+
+          <div class="divider"></div>
+
+          <label>Paid Media Spend ($)</label>
+          <input id="paidMediaSpend" type="number" step="0.01" />
+
+          <label>Other Marketing Spend ($)</label>
+          <input id="otherMarketingSpend" type="number" step="0.01" />
+
+          <label>Salaries ($)</label>
+          <input id="salarySpend" type="number" step="0.01" />
+
+          <label>Overhead ($)</label>
+          <input id="overheadSpend" type="number" step="0.01" />
+
+          <div class="divider"></div>
+
+          <label>New Customers</label>
+          <input id="newCustomers" type="number" />
+
+          <label>Paid Customers</label>
+          <input id="paidCustomers" type="number" />
+
+          <details>
+            <summary>Advanced</summary>
+
+            <label>LTV ($)</label>
+            <input id="ltv" type="number" step="0.01" />
+
+            <label>Gross Margin %</label>
+            <input id="grossMargin" type="number" step="0.1" />
+
+            <label>AOV ($)</label>
+            <input id="aov" type="number" step="0.01" />
+          </details>
+
+          <button type="button" id="resetButton">Reset</button>
+          <button type="button" id="copyButton">Copy Summary</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Outputs</h2>
+
+        <div class="metric">
+          <p class="label">Blended CAC</p>
+          <p class="value" id="blendedCacDisplay">—</p>
+        </div>
+
+        <div class="metric">
+          <p class="label">Paid CAC</p>
+          <p class="value" id="paidCacDisplay">—</p>
+        </div>
+
+        <div class="metric">
+          <p class="label">LTV : CAC</p>
+          <p class="value" id="ltvCacDisplay">—</p>
+        </div>
+
+        <div class="metric">
+          <p class="label">Orders to Break Even</p>
+          <p class="value" id="ordersToBreakEvenDisplay">—</p>
+        </div>
+
+        <div class="summary">
+          <p><strong>Time Unit:</strong> <span id="summaryTimeUnit">—</span></p>
+          <p><strong>Period:</strong> <span id="summaryPeriodLabel">—</span></p>
+          <p><strong>Total Spend:</strong> <span id="summaryTotalSpend">—</span></p>
+          <p><strong>New Customers:</strong> <span id="summaryNewCustomers">—</span></p>
+          <p><strong>Paid Customers:</strong> <span id="summaryPaidCustomers">—</span></p>
+        </div>
+
+        <p class="notes" id="interpretationText">
+          Enter spend + customers to calculate CAC.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">Operator Blueprints • CAC Calculator</footer>
+
+    <div id="toast">Copied.</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
