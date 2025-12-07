@@ -29,13 +29,34 @@
   --radius-pill: 999px;
   --shadow-soft: 0 32px 120px rgba(0, 0, 0, 0.85);
 }
-/* Global Header ----------------------------------------------------------- */
+
+/* BODY BACKGROUND – NO FLEX CENTERING */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background:
+    radial-gradient(140% 200% at 0% 0%, #1f2937 0, transparent 45%),
+    radial-gradient(140% 200% at 100% 0%, #111827 0, transparent 40%),
+    radial-gradient(200% 260% at 50% 100%, #020617 0, #000 60%);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: block;
+}
+
+/* Global Header ------------------------------------------------------------ */
 
 .global-header {
   width: 100%;
   max-width: 1440px;
-  margin: 0 auto 22px auto;
-  padding: 0 12px;
+  margin: 20px 12px 6px 12px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -72,28 +93,6 @@
   letter-spacing: 0.06em;
   color: #9ca3af;
   margin-left: 22px;
-  text-transform: none;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background:
-    radial-gradient(140% 200% at 0% 0%, #1f2937 0, transparent 45%),
-    radial-gradient(140% 200% at 100% 0%, #111827 0, transparent 40%),
-    radial-gradient(200% 260% at 50% 100%, #020617 0, #000 60%);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
 }
 
 /* App shell --------------------------------------------------------------- */
@@ -101,7 +100,7 @@ body {
 .app-shell {
   width: 100%;
   max-width: 1360px; /* ~1440 layout incl. margins */
-  margin: 32px auto;
+  margin: 24px 12px 32px;
   padding: 24px 28px 28px;
   border-radius: 30px;
   position: relative;
@@ -236,7 +235,7 @@ body {
   color: var(--text-soft);
 }
 
-/* Form fields ------------------------------------------------------------- */
+/* Form fields -------------------------------------------------------------- */
 
 #cac-form {
   display: flex;
@@ -320,7 +319,7 @@ body {
   color: var(--text-soft);
 }
 
-/* Buttons ----------------------------------------------------------------- */
+/* Buttons ------------------------------------------------------------------ */
 
 .form-actions {
   display: flex;
@@ -371,7 +370,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Results ----------------------------------------------------------------- */
+/* Results ------------------------------------------------------------------ */
 
 .error-banner {
   min-height: 0;
@@ -414,7 +413,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Metrics grid ------------------------------------------------------------ */
+/* Metrics grid ------------------------------------------------------------- */
 
 .metrics-grid {
   display: grid;
@@ -465,7 +464,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Status panel ------------------------------------------------------------ */
+/* Status panel ------------------------------------------------------------- */
 
 .status-panel {
   margin-top: 14px;
@@ -532,7 +531,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Footer ------------------------------------------------------------------ */
+/* Footer ------------------------------------------------------------------- */
 
 .app-footer {
   margin-top: 10px;
@@ -544,11 +543,11 @@ body {
   justify-content: space-between;
 }
 
-/* Responsive -------------------------------------------------------------- */
+/* Responsive --------------------------------------------------------------- */
 
 @media (max-width: 1024px) {
   .app-shell {
-    margin: 16px;
+    margin: 18px 12px 24px;
     padding: 18px 16px 20px;
   }
 
