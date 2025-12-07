@@ -4,203 +4,219 @@
   <meta charset="UTF-8" />
   <title>Operator Blueprints – CAC Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta
-    name="description"
-    content="Operator Blueprints CAC Calculator – quickly estimate your blended and paid CAC with a clean operator UI."
-  />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Operator Blueprints Global Header -->
-  <div class="global-header">
-    <div class="gh-left">
-      <div class="gh-dot"></div>
-      <div class="gh-title">OPERATOR BLUEPRINTS</div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo-dot"></div>
+      <div class="topbar-title-group">
+        <h1>Operator Blueprints</h1>
+        <p class="topbar-subtitle">CAC Calculator Tool</p>
+      </div>
     </div>
-    <div class="gh-subtitle">CAC Calculator</div>
-  </div>
+    <div class="topbar-right">
+      <span class="badge">Style A · Minimalist Operator Dashboard</span>
+    </div>
+  </header>
 
-  <div class="app-shell">
-    <header class="app-header">
-      <div class="logo-mark">OB</div>
-      <div class="app-meta">
-        <h1>CAC Calculator</h1>
-        <p class="app-subtitle">
-          Estimate your cost to acquire a customer by period, and sanity-check your LTV:CAC.
+  <main class="layout">
+    <!-- INPUTS PANEL -->
+    <section class="panel panel-inputs">
+      <h2>Assumptions</h2>
+      <p class="panel-subtitle">
+        Enter your new customers and acquisition spend to calculate CAC and sanity-check LTV:CAC.
+      </p>
+
+      <form
+        id="cac-form"
+        class="form-grid"
+        onsubmit="event.preventDefault(); runCAC();"
+      >
+        <!-- Time context -->
+        <div class="form-field">
+          <label for="timeUnit">Time Unit</label>
+          <select id="timeUnit" class="select-input">
+            <option value="month" selected>Month</option>
+            <option value="week">Week</option>
+            <option value="year">Year</option>
+          </select>
+          <p class="field-hint">
+            Choose the period this CAC calculation represents.
+          </p>
+        </div>
+
+        <div class="form-field">
+          <label for="periodLabel">Period Label</label>
+          <input
+            type="text"
+            id="periodLabel"
+            placeholder="e.g. October 2025"
+          />
+          <p class="field-hint">
+            Optional label so you can reference this CAC later.
+          </p>
+        </div>
+
+        <!-- Core drivers -->
+        <div class="form-field">
+          <label for="newCustomers">New Customers Acquired</label>
+          <input
+            type="number"
+            id="newCustomers"
+            min="0"
+            step="1"
+            value="250"
+          />
+          <p class="field-hint">
+            Number of new customers acquired in this period (all channels).
+          </p>
+        </div>
+
+        <div class="form-field">
+          <label for="paidSpend">Paid Media Spend</label>
+          <div class="input-prefix">
+            <span class="prefix">$</span>
+            <input
+              type="number"
+              id="paidSpend"
+              min="0"
+              step="1"
+              value="12000"
+            />
+          </div>
+          <p class="field-hint">
+            Meta, Google, TikTok, affiliates and other directly attributable paid media.
+          </p>
+        </div>
+
+        <div class="form-field">
+          <label for="otherSpend">Other Acquisition Spend</label>
+          <div class="input-prefix">
+            <span class="prefix">$</span>
+            <input
+              type="number"
+              id="otherSpend"
+              min="0"
+              step="1"
+              value="8000"
+            />
+          </div>
+          <p class="field-hint">
+            Teams, agencies, tools and other acquisition-related overhead for this period.
+          </p>
+        </div>
+
+        <!-- Optional LTV -->
+        <div class="form-divider"></div>
+        <h3 class="section-subheading">Optional · LTV & Payback</h3>
+
+        <div class="form-field">
+          <label for="ltvPerCustomer">LTV per Customer (Gross Margin)</label>
+          <div class="input-prefix">
+            <span class="prefix">$</span>
+            <input
+              type="number"
+              id="ltvPerCustomer"
+              min="0"
+              step="1"
+              placeholder="e.g. 450"
+            />
+          </div>
+          <p class="field-hint">
+            Use your LTV model’s gross-margin LTV per customer to compute LTV:CAC.
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            onclick="resetCACInputs()"
+          >
+            Reset Inputs
+          </button>
+          <button type="submit" class="btn-primary">
+            Calculate CAC
+          </button>
+        </div>
+      </form>
+
+      <div class="assumption-note">
+        <h3>How this CAC model works</h3>
+        <p>
+          Blended CAC uses total acquisition spend – including media and overhead – divided by new
+          customers. Paid CAC looks only at media. Adding LTV per customer lets you see your
+          LTV:CAC ratio and quickly judge whether your acquisition engine is healthy.
         </p>
       </div>
-    </header>
+    </section>
 
-    <main class="app-main">
-      <section class="card card-layout">
-        <!-- INPUT COLUMN -->
-        <div class="card-column card-column--left">
-          <h2 class="section-title">Inputs</h2>
+    <!-- OUTPUT PANEL -->
+    <section class="panel panel-output">
+      <h2>CAC Output</h2>
+      <p class="panel-subtitle">
+        Blended and paid CAC, plus LTV:CAC and a simple operator summary.
+      </p>
 
-          <form id="cac-form" novalidate>
-            <div class="field-row">
-              <div class="field">
-                <label for="time-unit">Time Unit</label>
-                <select id="time-unit" name="time-unit">
-                  <option value="Month">Month</option>
-                  <option value="Quarter">Quarter</option>
-                  <option value="Year">Year</option>
-                  <option value="Custom">Custom</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="time-label">Period Label</label>
-                <input
-                  id="time-label"
-                  name="time-label"
-                  type="text"
-                  placeholder="e.g. October 2025"
-                />
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="new-customers">New Customers Acquired</label>
-              <input
-                id="new-customers"
-                name="new-customers"
-                type="number"
-                min="0"
-                step="1"
-                placeholder="e.g. 250"
-                inputmode="decimal"
-              />
-            </div>
-
-            <div class="field">
-              <label for="paid-spend">Paid Media Spend (USD)</label>
-              <input
-                id="paid-spend"
-                name="paid-spend"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 12500"
-                inputmode="decimal"
-              />
-              <p class="field-hint">
-                Meta, Google, TikTok, affiliates & any directly attributable media spend.
-              </p>
-            </div>
-
-            <div class="field">
-              <label for="other-spend">Other Acquisition Spend (USD)</label>
-              <input
-                id="other-spend"
-                name="other-spend"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 6000"
-                inputmode="decimal"
-              />
-              <p class="field-hint">
-                Teams, agencies, tools & other acquisition-related overhead for this period.
-              </p>
-            </div>
-
-            <div class="field">
-              <label for="ltv">Average LTV per Customer (Optional, USD)</label>
-              <input
-                id="ltv"
-                name="ltv"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 450"
-                inputmode="decimal"
-              />
-              <p class="field-hint">
-                Use your best estimate or pull from your LTV Calculator.
-              </p>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" id="quick-fill" class="ghost-button">
-                Load Sample Data
-              </button>
-              <button type="reset" class="link-button">Reset</button>
-            </div>
-          </form>
+      <!-- KPI STRIP -->
+      <div class="kpi-strip">
+        <div class="kpi-card">
+          <p class="kpi-label">Blended CAC</p>
+          <p class="kpi-value" id="blendedCACValue">–</p>
+          <p class="kpi-tag" id="blendedCACTag">
+            Total acquisition spend ÷ new customers
+          </p>
         </div>
-
-        <!-- RESULTS COLUMN -->
-        <div class="card-column card-column--right">
-          <h2 class="section-title">Results</h2>
-
-          <div id="error-banner" class="error-banner" aria-live="polite"></div>
-
-          <div class="summary-row">
-            <div>
-              <p class="summary-label">Summary</p>
-              <p class="summary-value" id="summary-period">
-                Waiting for inputs…
-              </p>
-            </div>
-          </div>
-
-          <div class="metrics-grid">
-            <div class="metric-card metric-card--primary">
-              <p class="metric-label">Blended CAC</p>
-              <p class="metric-value" id="blended-cac">$0.00</p>
-              <p class="metric-sub" id="blended-cac-sub">
-                Total acquisition spend ÷ new customers
-              </p>
-            </div>
-
-            <div class="metric-card">
-              <p class="metric-label">Paid CAC</p>
-              <p class="metric-value" id="paid-cac">$0.00</p>
-              <p class="metric-sub">Paid media only ÷ new customers</p>
-            </div>
-
-            <div class="metric-card">
-              <p class="metric-label">Total Acquisition Spend</p>
-              <p class="metric-value" id="total-spend">$0.00</p>
-              <p class="metric-sub" id="total-spend-sub">
-                Paid + other acquisition costs
-              </p>
-            </div>
-
-            <div class="metric-card">
-              <p class="metric-label">New Customers</p>
-              <p class="metric-value" id="customers-out">0</p>
-              <p class="metric-sub">For the selected period</p>
-            </div>
-          </div>
-
-          <div class="status-panel">
-            <div class="status-header">
-              <span class="status-title">LTV : CAC</span>
-              <span class="status-pill" id="ltv-cac-status">Add LTV</span>
-            </div>
-            <p class="status-main" id="ltv-cac-ratio">
-              Add LTV to see your LTV:CAC ratio.
-            </p>
-            <p class="status-note">
-              Rule of thumb: aim for <strong>3x+ LTV:CAC</strong> for healthy paid acquisition.
-            </p>
-          </div>
+        <div class="kpi-card">
+          <p class="kpi-label">Paid CAC</p>
+          <p class="kpi-value" id="paidCACValue">–</p>
+          <p class="kpi-tag">
+            Paid media spend ÷ new customers
+          </p>
         </div>
-      </section>
-    </main>
+        <div class="kpi-card">
+          <p class="kpi-label">Total Acquisition Spend</p>
+          <p class="kpi-value" id="totalSpendValue">–</p>
+          <p class="kpi-tag" id="totalSpendTag">
+            Paid + other acquisition costs
+          </p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-label">LTV : CAC</p>
+          <p class="kpi-value" id="ltvCACValue">–</p>
+          <p class="kpi-tag" id="ltvCACTag">
+            Add LTV per customer to see LTV:CAC.
+          </p>
+        </div>
+      </div>
 
-    <footer class="app-footer">
-      <span>Operator Blueprints &middot; Tools & Calculators &middot; CAC</span>
-    </footer>
-  </div>
+      <!-- OUTPUT ACTIONS -->
+      <div class="output-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          onclick="downloadCACCsv()"
+        >
+          Download CSV
+        </button>
+      </div>
+
+      <!-- TEXTUAL SUMMARY -->
+      <div class="summary-card">
+        <h3>Scenario Summary</h3>
+        <ul id="summaryList" class="summary-list">
+          <li>Enter new customers and acquisition spend, then calculate CAC.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Operator Blueprints · CAC Calculator</span>
+    <span>Speed is the moat · Precision is the standard</span>
+  </footer>
 
   <script src="script.js"></script>
 </body>
